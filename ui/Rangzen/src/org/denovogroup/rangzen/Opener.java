@@ -310,13 +310,14 @@ public class Opener extends ActionBarActivity implements OnItemClickListener {
             b.putSerializable("whichScreen",
                     ListFragmentOrganizer.FragmentType.FEED);
             needAdd.setArguments(b);
-
         } else if (position == 1) {
+            needAdd = new MapsActivity();
+        } else if (position == 2) {
             Intent intent = new Intent();
             intent.setClass(this, PostActivity.class);
             startActivityForResult(intent, Message);
             return;
-        } else if (position == 2) {
+        } else if (position == 3) {
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
             // startActivityForResult(intent, 0);
