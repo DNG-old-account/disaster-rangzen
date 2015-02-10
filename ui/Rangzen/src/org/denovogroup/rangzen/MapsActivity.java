@@ -335,7 +335,7 @@ public class MapsActivity extends Fragment implements
      *            frame.
      */
     private void unbindDrawables(View view) {
-        if (view.getBackground() != null) {
+        if (view != null && view.getBackground() != null) {
             view.getBackground().setCallback(null);
         }
         if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
