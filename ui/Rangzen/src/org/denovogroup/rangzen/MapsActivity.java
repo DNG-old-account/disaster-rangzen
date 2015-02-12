@@ -199,16 +199,6 @@ public class MapsActivity extends Fragment implements
         // setContentView(R.layout.master);
         view = inflater.inflate(R.layout.master, container, false);
         mLocationClient = new LocationClient(getActivity(), this, this);
-        // createButtonImage(R.id.ib, R.drawable.abouticon19,
-        // R.drawable.pressedinfo, false, 1, view);
-        createButtonImage(R.id.button22, R.drawable.slider,
-                R.drawable.sliderpressed, false, 2, view);
-        createButtonImage(R.id.refresh, R.drawable.refresh,
-                R.drawable.refreshpressed, false, 3, view);
-        createButtonImage(R.id.leftArrow, R.drawable.rightarrow,
-                R.drawable.rightarrowpressed, true, 4, view);
-        createButtonImage(R.id.rightArrow, R.drawable.rightarrow,
-                R.drawable.rightarrowpressed, false, 5, view);
 
         if (savedInstanceState == null) {
 
@@ -240,7 +230,6 @@ public class MapsActivity extends Fragment implements
             }
             mMap.setMyLocationEnabled(true);
         }
-        createSlider();
         return view;
     }
 
@@ -347,40 +336,6 @@ public class MapsActivity extends Fragment implements
     }
 
     /**
-     * Initialize the slider and its on click listener with a min and max range
-     * (taken care of edge cases with no locations stored).
-     */
-    private void createSlider() {
-        mPolyLineRange = new RangeSeekBar<Double>(0d, 1d, getActivity());
-        OnRangeSeekBarChangeListener<Double> change = new OnRangeSeekBarChangeListener<Double>() {
-
-            @Override
-            public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar,
-                    Double minValue, Double maxValue) {
-                // TODO Auto-generated method stub
-                mLocationStore = new LocationStore(getActivity(),
-                        StorageBase.ENCRYPTION_DEFAULT);
-                int size = mLocationStore.getMostRecentSequenceNumber();
-                if (maxValue != -1 && maxValue != minValue
-                        && minValue < maxValue && minValue != -1) {
-                    int lowDraw = (int) (minValue * size);
-                    int highDraw = (int) (maxValue * size);
-                    if (lowDraw == 0) {
-                        lowDraw++;
-                    }
-                    if (highDraw == 0) {
-                        highDraw++;
-                    }
-                    drawPoints(lowDraw, highDraw, 0);
-                }
-            }
-        };
-        mPolyLineRange.setOnRangeSeekBarChangeListener(change);
-        LinearLayout slider = (LinearLayout) view.findViewById(R.id.slider);
-        slider.addView(mPolyLineRange);
-    }
-
-    /**
      * Will only be called in OnCreate and also the app needs to have been
      * destroyed in order for the method to be called again.
      */
@@ -406,81 +361,6 @@ public class MapsActivity extends Fragment implements
             mMap.setMyLocationEnabled(true);
             mMap.setBuildingsEnabled(true);
         }
-    }
-
-    //(TODO) Jesus - Put this functionality in other parts of the app.
-//    /**
-//     * The onClickListener of the Deny button on the transparent page. Used to
-//     * restart the introduction slides if they do not accept.
-//     * 
-//     * @param v
-//     *            The View for the deny button.
-//     */
-//    public void sDeny(View v) {
-//        Log.i(TAG, "Denied permission.");
-//        Intent intent = new Intent();
-//        mHasCentered = false;
-//        intent.setClass(this, SlidingPageIndicator.class);
-//        startActivity(intent);
-//        finish();
-//    }
-
-//    /**
-//     * Make sure that the introduction and the transparent page will never be
-//     * seen again and go through to the map.
-//     * 
-//     * @param v
-//     *            - View for the accept button
-//     */
-//    public void sAccept(View v) {
-//        Log.i(TAG, "Accepted permission.");
-//        mTransparent.getView().setClickable(false);
-//        mTransparent.getView().setVisibility(View.INVISIBLE);
-//        ViewGroup vg = (ViewGroup) mTransparent.getView().getParent();
-//        vg.setClickable(false);
-//        vg.setVisibility(View.INVISIBLE);
-//        ViewGroup vgParent = (ViewGroup) vg.getParent();
-//        vgParent.removeView(vg);
-//
-//        SharedPreferences settings = getSharedPreferences(
-//                SlidingPageIndicator.PREFS_NAME, 0);
-//        SharedPreferences.Editor editor = settings.edit();
-//
-//        editor.putBoolean("hasLoggedIn", true);
-//        editor.commit();
-//
-//        editor.putBoolean("transparent", true);
-//        editor.commit();
-//
-//        Log.i(TAG, "Experiment state is now EXP_STATE_NOT_YET_REGISTERED.");
-//        mStore = new StorageBase(this, StorageBase.ENCRYPTION_DEFAULT);
-//        mStore.put(RangzenService.EXPERIMENT_STATE_KEY,
-//                RangzenService.EXP_STATE_NOT_YET_REGISTERED);
-//
-//        // Spawn Rangzen Service.
-//        Log.i(TAG, "Permission granted - Starting Rangzen Service.");
-//        Intent rangzenServiceIntent = new Intent(this, RangzenService.class);
-//        getActivity().startService(rangzenServiceIntent);
-//    }
-
-    /**
-     * OnClickListener for the about icon, this handles the creation of a new
-     * fragment and pressing back button to get back to the map.
-     * 
-     * @param v
-     *            The view that contains the about icon.
-     */
-    public void s(View v) {
-        Fragment info = new FragmentOrganizer();
-        Bundle b = new Bundle();
-        b.putSerializable("whichScreen", FragmentType.SECONDABOUT);
-        info.setArguments(b);
-        getActivity().findViewById(R.id.infoHolder).setClickable(true);
-        mFragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft = mFragmentManager.beginTransaction();
-        ft.add(R.id.infoHolder, info);
-        ft.addToBackStack("info");
-        ft.commit();
     }
 
     /**
@@ -562,27 +442,6 @@ public class MapsActivity extends Fragment implements
     }
 
     /**
-     * Handle results returned to the FragmentActivity by Google Play services.
-     */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Decide what to do based on the original request code
-        switch (requestCode) {
-
-        case CONNECTION_FAILURE_RESOLUTION_REQUEST:
-            /*
-             * If the result code is Activity.RESULT_OK, try to connect again
-             */
-            switch (resultCode) {
-            case Activity.RESULT_OK:
-                mLocationClient.connect();
-                break;
-            }
-
-        }
-    }
-
-    /**
      * Checks to see if GooglePlayServices is available; if it is then it
      * returns true, if not then an error is given and it returns false.
      * 
@@ -622,7 +481,6 @@ public class MapsActivity extends Fragment implements
     @Override
     public void onConnected(Bundle dataBundle) {
         if (!mHasCentered) {
-            drawPoints(-1, -1, 0);
             centerMap();
         }
         setUpMapIfNeeded();
@@ -638,7 +496,6 @@ public class MapsActivity extends Fragment implements
     @Override
     public void onDisconnected() {
         if (!mHasCentered) {
-            drawPoints(-1, -1, 0);
             centerMap();
         }
     }
@@ -705,22 +562,6 @@ public class MapsActivity extends Fragment implements
 
     /** Handle to Rangzen location storage provider. */
     private LocationStore mLocationStore;
-
-    /**
-     * Called from OnCreate in order to only draw the previous points once.
-     * 
-     * @param maxValue
-     *            The max value to draw points to.
-     * @param minValue
-     *            The min value of the points to include on the map.
-     */
-    private void drawPoints(Integer minValue, Integer maxValue, Integer isArrow) {
-        mNumAsyncTasks++;
-        ProgressBar pb = (ProgressBar) getActivity()
-                .findViewById(R.id.progress);
-        pb.setVisibility(View.VISIBLE);
-        new DrawPointsThread().execute(minValue, maxValue, isArrow);
-    }
 
     /**
      * Determines if the distance between two LatLng points is large enough
@@ -912,145 +753,14 @@ public class MapsActivity extends Fragment implements
                     Toast.LENGTH_SHORT).show();
             // TODO (Jesus) Finish the Async race... condition.
             mNumAsyncTasks -= 1;
-            ProgressBar pb = (ProgressBar) getActivity().findViewById(
-                    R.id.progress);
-            if (pb != null) {
-                pb.setVisibility(View.INVISIBLE);
-            }
         }
     }
 
     @Override
     public void onClick(View v) {
         int viewID = v.getId();
-        if (viewID == R.id.refresh) {
-            sRefresh(v);
-            return;
-        } else if (viewID == R.id.leftArrow) {
-            sLeftArrow(v);
-        } else if (viewID == R.id.rightArrow) {
-            sRightArrow(v);
-        } else if (viewID == R.id.button22) {
-            sSliderButton(v);
-        } else {
-            return;
-            // if viewID == R.id.ib
-            // s(v);
-        }
-    }
-
-    /**
-     * Redraw all of the points that the phone contains.
-     * 
-     * @param v
-     *            The refresh button itself.
-     */
-    public void sRefresh(View v) {
-        mLocationStore = new LocationStore(getActivity(),
-                StorageBase.ENCRYPTION_DEFAULT);
-        int size = mLocationStore.getMostRecentSequenceNumber();
-        if (size != 0) {
-            drawPoints(-1, -1, 0);
-            mPolyLineRange.setNormalizedMaxValue(1);
-            mPolyLineRange.setNormalizedMinValue(0);
-        }
-    }
-
-    /**
-     * This the is the slider button OnClickListener, it turns the slider
-     * invisible and visible.
-     * 
-     * @param v
-     *            The image button itself.
-     */
-    public void sSliderButton(View v) {
-        LinearLayout slider = (LinearLayout) view.findViewById(R.id.slider);
-        if (!mIsSliderOn || slider.getVisibility() == View.INVISIBLE) {
-            slider.setVisibility(View.VISIBLE);
-            mIsSliderOn = true;
-        } else {
-            slider.setVisibility(View.INVISIBLE);
-            mIsSliderOn = false;
-        }
-    }
-
-    /**
-     * The right arrow that will show with the slider to show the next x many
-     * points in the future not yet being shown.
-     * 
-     * @param v
-     *            The right arrow button.
-     */
-    public void sRightArrow(View v) {
-        double max = mPolyLineRange.getSelectedMaxValue();
-        double min = mPolyLineRange.getSelectedMinValue();
-        mLocationStore = new LocationStore(getActivity(),
-                StorageBase.ENCRYPTION_DEFAULT);
-        int size = mLocationStore.getMostRecentSequenceNumber();
-        double percentChange = ((double) mIntegerPercentChange / 100.0);
-        double highDrawPercent = (max + percentChange);
-
-        int highDraw = (int) (highDrawPercent * size);
-        if (highDraw == 0) {
-            highDraw++;
-        }
-        int lowDraw = (int) (min * size);
-        if (lowDraw == 0) {
-            lowDraw++;
-        }
-        if (size == -1) {
-            return;
-        }
-
-        if (max + percentChange >= 1) {
-            drawPoints(lowDraw, size, -1);
-            mPolyLineRange.setNormalizedMaxValue(size);
-        } else {
-            drawPoints(lowDraw, highDraw, -1);
-            mPolyLineRange.setNormalizedMaxValue(highDrawPercent);
-        }
-    }
-
-    /**
-     * The left arrow that will show with the slider to show the next x many
-     * points in the past not yet being shown.
-     * 
-     * @param v
-     *            The left arrow button.
-     */
-    public void sLeftArrow(View v) {
-        double min = mPolyLineRange.getSelectedMinValue();
-        double max = mPolyLineRange.getSelectedMaxValue();
-        mLocationStore = new LocationStore(getActivity(),
-                StorageBase.ENCRYPTION_DEFAULT);
-        int size = mLocationStore.getMostRecentSequenceNumber();
-        double percentChange = ((double) mIntegerPercentChange / 100.0);
-        double lowDrawPercent = (min - percentChange);
-        Log.d(TAG, "value of min =" + min);
-        Log.d(TAG, "value of max = " + max);
-        Log.d(TAG, "value of size = " + size);
-        Log.d(TAG, "value of change = " + percentChange);
-        Log.d(TAG, "value of lowDraw =" + lowDrawPercent);
-
-        if (size == -1) {
-            return;
-        }
-
-        int highDraw = (int) (max * size);
-        if (highDraw == 0) {
-            highDraw++;
-        }
-        int lowDraw = (int) (lowDrawPercent * size);
-        if (lowDraw == 0) {
-            lowDraw++;
-        }
-
-        if (lowDrawPercent <= 0) {
-            drawPoints(1, highDraw, -1);
-            mPolyLineRange.setNormalizedMinValue(0);
-        } else {
-            drawPoints(lowDraw, highDraw, -1);
-            mPolyLineRange.setNormalizedMinValue(lowDrawPercent);
-        }
+        // if (viewID == R.id.refresh) {
+        //     sRefresh(v);
+        // }
     }
 }
