@@ -479,9 +479,6 @@ public class MapsActivity extends Fragment implements
     /** Handle to Rangzen location storage provider. */
     private LocationStore mLocationStore;
 
-    /** Radius of the Erf (Earth). */
-    private int radius = 6371000;
-
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play
      * services APK is correctly installed) and the map has not already been
